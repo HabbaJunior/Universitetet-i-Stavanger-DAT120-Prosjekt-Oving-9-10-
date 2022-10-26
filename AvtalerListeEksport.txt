@@ -1,0 +1,3 @@
+A, Ikke satt, Ikke satt, -1
+B, Ikke satt, Ikke satt, -1
+C, Ikke satt, Ikke satt, -1
