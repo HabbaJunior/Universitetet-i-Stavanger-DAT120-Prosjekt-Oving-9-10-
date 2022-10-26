@@ -33,10 +33,11 @@ class avtale:
     def setstarttidspunkt(self, starttidspunkt):
         if starttidspunkt.strip() == "Ikke satt":
             self.starttidspunkt = starttidspunkt
-        elif type(starttidspunkt) is datetime:
-            self.starttidspunkt = starttidspunkt.strip()
         else:
-            raise TypeError("Avtalen forventer \"datetime\" som starttidspunkt")
+            try:
+                self.starttidspunkt = datetime.fromisoformat(starttidspunkt)
+            except:
+                raise TypeError("Avtalen forventer \"datetime\" som starttidspunkt")
     
     def setvarighet(self, varighet):
         while True:
@@ -53,7 +54,7 @@ def nyavtale():
     a = input("Skirv inn navnet til avtalen: ")
     b = input("Skirv inn stedet til avtalen: ")
     while True:
-        c = input("Skirv inn starttidspunktet til avtalen (AAAA-MM-DD TT:MM:SS): ")
+        c = input("Skirv inn starttidspunktet til avtalen (YYYY-MM-DD HH:MM:SS): ")
         try:
             d = datetime.fromisoformat(c)
             break
@@ -82,18 +83,53 @@ def eksporterliste(liste):
 def importerliste(liste):
     with open(liste, "r", 1, "UTF-8") as ALI:
         for linje in ALI:
-            x, y, u, o = linje.split(",") 
-            return(x, y, u, o) 
+            x, y, u, o = linje.split(",")
+            x = x.strip()
+            y = y.strip()
+            u = u.strip()
+            o = o.strip()
+            return(x, y, u, o)
         
-a = avtale("A") 
+        
+def avtalerDenneDatoen(ListeMedAvtaler, Dato):
+    with open(ListeMedAvtaler, "r", 1, "UTF-8") as LMA:
+        ListeMedAvtalerSammeDato = []
+        Dato = datetime.fromisoformat(Dato)
+        for linje in LMA:
+            x, y, u, o = linje.split(",")
+            u = u.strip()
+            try:
+                u = datetime.fromisoformat(u)
+            except:
+                continue
+            datetime.date(Dato) == datetime.date(u)
+            ListeMedAvtalerSammeDato.append(x)
+            return ListeMedAvtalerSammeDato
+
+def LiknendeTittel(ListeMedAvtaler, søkeord):
+    with open(ListeMedAvtaler, "r", 1, "UTF-8") as LMA:
+        ListeMedAvtalerMedLiknendeTittel = []
+        for linje in LMA:
+            x, y, u, o = linje.split(",")
+            x = x.strip()
+            if x.find(søkeord) > -1 :
+                ListeMedAvtalerMedLiknendeTittel.append(x)
+
+def menyen():
+                    
+               
+a = avtale("A", "B","2022-09-16 13:15:12" , 30) 
 b = avtale ("B")
 c = avtale ("C")                      
 avtalene = [a, b, c]
+
 
 printliste(avtalene)
 eksporterliste(avtalene)
 
 x, y, u, o = importerliste("AvtalerListeImport.txt")
 avtale = avtale(x, y, u, o)
-        
+
+o = avtalerDenneDatoen("AvtalerListeImport.txt", "2000-12-12 13:15:12")
+  
         
