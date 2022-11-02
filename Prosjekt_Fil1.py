@@ -6,14 +6,15 @@ Created on Wed Oct 26 08:32:17 2022
 
 """
 from datetime import datetime
-InternListeMedAvtaler = []
-
+InternListeMedAvtaler = {}
+InternListeMedKategorier = {}
 class avtale:
-    def __init__(self, tittel, sted = "Ikke satt", starttidspunkt = "Ikke satt", varighet = -1):
+    def __init__(self, tittel, sted = "Ikke satt", starttidspunkt = "Ikke satt", varighet = -1, kategorier = []):
         self.settittel(tittel)
         self.setsted(sted)
         self.setstarttidspunkt(starttidspunkt)
-        self.setvarighet(varighet) 
+        self.setvarighet(varighet)
+        self.setkategorier(kategorier)
     
     def __str__(self):
         if self.varighet == -1:
@@ -49,8 +50,12 @@ class avtale:
             except:
                 raise TypeError("Avtalen forventer \"int\" som varighet")
             break
-        
-        
+    def setkategorier(self, kategorier):
+        self.kategorier = kategorier
+     
+    def leggTilKategori(self, kategori: "Kategori"):
+        #NB! Kan gi duplikater 
+        self.kategorier.append(kategori)
         
 def nyavtale():
     print("\nHei! Du kan nå lage en ny avtale")
@@ -73,9 +78,8 @@ def nyavtale():
         except:
             print("Husk korrekt format")
             continue
-    InternListeMedAvtaler.append(avtale(a, b, c, d))
-    return InternListeMedAvtaler
-
+    InternListeMedAvtaler[a] = (avtale(a, b, c, d))
+    return InternListeMedAvtaler[a]
 
 def printliste(liste, Overskrift = "Overskrift :)"):
     print(Overskrift)    
@@ -87,7 +91,7 @@ def eksporterliste(filnavn):
             for index in range(len(InternListeMedAvtaler)):
                 ALE.writelines(InternListeMedAvtaler[index].__repr__()+ "\n")
       
-def importerliste(filnavn):
+def importerAvtalerListe(filnavn):
     while True:
         try:
             with open(filnavn, "r", 1, "UTF-8") as ALI:
@@ -101,7 +105,7 @@ def importerliste(filnavn):
                 y = y.strip()
                 u = u.strip()
                 o = o.strip()
-                InternListeMedAvtaler.append(x + ", " + y + ", " + u + ", " + o)
+                InternListeMedAvtaler[x] = (x + ", " + y + ", " + u + ", " + o)
         return InternListeMedAvtaler
         break
 
@@ -131,7 +135,47 @@ def LiknendeTittel(ListeMedAvtaler, søkeord):
                 ListeMedAvtalerMedLiknendeTittel.append(x)
     return ListeMedAvtalerMedLiknendeTittel
 
+class Kategori:
+    def __init__(self, ID, navn, Prioritet = 1):
+        self.settID
+        self.navn = navn
+        self.Prioritet = Prioritet
+        
+    def settID(self, ID):
+        pass
+    def settNavn(self, Navn):  
+        pass
+    def settPrioritet(self, Prioritet):
+        pass
+    
+    def __str__(self):
+        return f"Avtalen {self.Navn} har ID: {self.ID} og prioritet: {self.Prioritet}" 
+        
+def nykategori():
+    navn = input("Hva skal kategorien hette?: ")
+    ID = input("Hvilken ID skal kategorien ha?: ")
+    Prioritet = input("Hvilken prioritet skal kategorien ha?: ")
+    InternListeMedKategorier[navn] = (Kategori(ID, navn, Prioritet))
+    return InternListeMedKategorier[navn]
 
+def importerKategorierListe(filnavn):
+    while True:
+        try:
+            with open(filnavn, "r", 1, "UTF-8") as ALI:
+                pass
+        except:
+            print("Filen ikke funnet")  
+        with open(filnavn, "r", 1, "UTF-8") as ALI:    
+            for linje in ALI:
+                x, y, u = linje.split(",")
+                x = x.strip()
+                y = y.strip()
+                u = u.strip()
+                InternListeMedKategorier.append(x + ", " + y + ", " + u + ", ")
+        return InternListeMedKategorier
+        break
+
+"""
 while True:
     print("\nMeny, Velg Tall fra:    1-5")
     print("Les inn avtaler fra fil: 1 \nSkriv avtalene til fil:  2 \nRegistrer ny avtale:     3 \nPrint alle avtalene:     4 \nAvslutt:                 5")
@@ -150,7 +194,7 @@ while True:
  
     if valg == 1: #Les inn avtaler fra fil
         navnpafil = input("Skriv inn navnet på filen du vil importere: ")
-        importerliste(navnpafil+".txt")
+        importerAvtalerListe(navnpafil+".txt")
         
     
     if valg == 2: #Skriv inn avtaler til en fil 
@@ -165,29 +209,5 @@ while True:
        
     if valg == 5: #avslutt
         break 
-                   
-listen = ["apekatt", "jaaa", "ahahah", "rompe"]
-liste2 = []
-#liste2 = importerliste(avtalerlisteeksport)
-#menyen()
-
-
-
-"""               
-a = avtale("A", "B","2022-09-16 13:15:12" , 30) 
-b = avtale ("B")
-c = avtale ("C")                      
-avtalene = [a, b, c]
-
-
-printliste(avtalene)
-eksporterliste(avtalene)
-
-x, y, u, o = importerliste("AvtalerListeImport.txt")
-avtale = avtale(x, y, u, o)
-
-o = avtalerDenneDatoen("AvtalerListeImport.txt", "2000-12-12 13:15:12")
-
-Lister[input("Navnet pa listen min: ")] = listex
-""" 
+"""
         
