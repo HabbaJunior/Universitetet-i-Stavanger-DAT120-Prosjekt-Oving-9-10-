@@ -37,11 +37,11 @@ class avtale:
             self.starttidspunkt = starttidspunkt
         if isinstance(starttidspunkt, datetime):
             self.starttidspunkt = starttidspunkt
-        else:
+        """else:
             try:
                 self.starttidspunkt = datetime.fromisoformat(starttidspunkt)
             except:
-                raise TypeError("Avtalen forventer \"datetime\" som starttidspunkt")
+                raise TypeError("Avtalen forventer \"datetime\" som starttidspunkt")"""
         
     def setvarighet(self, varighet):
         while True:
@@ -56,7 +56,7 @@ class avtale:
     def leggTilKategori(self, kategori: "Kategori"):
         #NB! Kan gi duplikater 
         self.kategorier.append(kategori)
-        
+
 def nyavtale():
     print("\nHei! Du kan nå lage en ny avtale")
     a = input("Skirv inn navnet til avtalen: ")
@@ -85,7 +85,12 @@ def printliste(liste, Overskrift = "Overskrift :)"):
     print(Overskrift)    
     for index in range(len(liste)):
             print (f"Avtalen: {liste[index]} har index: {index}")
-            
+ 
+def printdict(Dict: dict, Overskrift = "Overskrift :)"):
+    print(Overskrift)
+    for key in Dict:
+        print(f"{Dict[key]}")
+
 def eksporterliste(filnavn):
         with open(filnavn, "w", 1, "UTF-8") as ALE:
             for index in range(len(InternListeMedAvtaler)):
@@ -105,10 +110,16 @@ def importerAvtalerListe(filnavn):
                 y = y.strip()
                 u = u.strip()
                 o = o.strip()
-                InternListeMedAvtaler[x] = (x + ", " + y + ", " + u + ", " + o)
-        return InternListeMedAvtaler
+                print(x)
+                print(y)
+                print(u)
+                print(o)
+                try:
+                    u = datetime.fromisoformat(u)
+                    InternListeMedAvtaler[x] = avtale(x, y, u, o)
+                except:
+                    InternListeMedAvtaler[x] = avtale(tittel = x, sted = y, varighet= o)
         break
-
 
 def avtalerDenneDatoen(ListeMedAvtaler, Dato):
     with open(ListeMedAvtaler, "r", 1, "UTF-8") as LMA:
@@ -137,7 +148,7 @@ def LiknendeTittel(ListeMedAvtaler, søkeord):
 
 class Kategori:
     def __init__(self, ID, navn, Prioritet = 1):
-        self.settID
+        self.ID = ID
         self.navn = navn
         self.Prioritet = Prioritet
         
@@ -149,7 +160,7 @@ class Kategori:
         pass
     
     def __str__(self):
-        return f"Avtalen {self.Navn} har ID: {self.ID} og prioritet: {self.Prioritet}" 
+        return f"Avtalen {self.navn} har ID: {self.ID} og prioritet: {self.Prioritet}" 
         
 def nykategori():
     navn = input("Hva skal kategorien hette?: ")
@@ -171,20 +182,26 @@ def importerKategorierListe(filnavn):
                 x = x.strip()
                 y = y.strip()
                 u = u.strip()
-                InternListeMedKategorier.append(x + ", " + y + ", " + u + ", ")
-        return InternListeMedKategorier
-        break
+                InternListeMedKategorier.append(x + ", " + y + ", " + u)
+                break
 
-"""
+x = "E"
+y = "Ikke satt"
+u = "Ikke satt"
+o = "-1"
+hei = avtale(x, y, u, o)
+
+InternListeMedKategorier["avtalen"] = Kategori("en", "avtalen")
+
 while True:
-    print("\nMeny, Velg Tall fra:    1-5")
-    print("Les inn avtaler fra fil: 1 \nSkriv avtalene til fil:  2 \nRegistrer ny avtale:     3 \nPrint alle avtalene:     4 \nAvslutt:                 5")
+    print("\nMeny, Velg Tall fra:    1-6")
+    print("Les inn avtaler fra fil: 1 \nSkriv avtalene til fil:  2 \nRegistrer ny avtale:     3 \nPrint alle avtalene:     4 \nTilføy kategori til avtale: 5 \nAvslutt:                 6")
     
     while True:
         valg = input("Ditt valg:               ")
         try:
             valg = int(valg)
-            if 0 < valg <= 5:
+            if 0 < valg <= 6:
                break
             else:
                 continue
@@ -205,9 +222,15 @@ while True:
         nyavtale()
     
     if valg == 4: #Print ut avtalene 
-       printliste(InternListeMedAvtaler)
-       
-    if valg == 5: #avslutt
-        break 
-"""
+       printdict(InternListeMedAvtaler)
+    
+    if valg == 5: #Legg til kategori
+        printdict(InternListeMedAvtaler, "\nListe over avtaler")
+        printdict(InternListeMedKategorier,"\nListe over Kategorier")
+        navnpaavtale = input("\nSkriv inn navnet på avtalen du vil legge kategori til: ")
+        navnpakategori = input("Skriv inn navnet til kategorien du vil legge til: ")
+        InternListeMedAvtaler[navnpaavtale].leggTilKategori(InternListeMedKategorier[navnpakategori])
         
+    
+    if valg == 6: #avslutt
+        break 

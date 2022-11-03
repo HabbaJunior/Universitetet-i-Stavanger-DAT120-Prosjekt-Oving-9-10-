@@ -1,3 +1,2 @@
 D, Ikke satt, 2000-12-12 10:19:54, -1
 E, Ikke satt, Ikke satt, -1
-F, Ikke satt, Ikke satt, -1
