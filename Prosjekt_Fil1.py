@@ -8,24 +8,34 @@ Created on Wed Oct 26 08:32:17 2022
 from datetime import datetime
 InternListeMedAvtaler = {}
 InternListeMedKategorier = {}
+
+
 class avtale:
-    def __init__(self, tittel, sted = "Ikke satt", starttidspunkt = "Ikke satt", varighet = -1, kategorier = []):
+    def __init__(self, tittel, sted = "Ikke satt", starttidspunkt = "Ikke satt", varighet = -1, kategorier=[]):
         self.settittel(tittel)
         self.setsted(sted)
         self.setstarttidspunkt(starttidspunkt)
         self.setvarighet(varighet)
-        self.setkategorier(kategorier)
-    
+        self.kategorier = []
+        
+        
     def __str__(self):
         if self.varighet == -1:
-            return f"Avtalen \"{self.tittel}\" holdes i  \"{self.sted}\", starter \"{self.starttidspunkt}\" og varer i \"Ikke satt\""
+            streng =  f"Avtalen \"{self.tittel}\" holdes i  \"{self.sted}\", starter \"{self.starttidspunkt}\" og varer i \"Ikke satt\" den har kategoriene: "
+            for kategori in self.kategorier:
+                streng += f"{kategori.navn}; "
         else:
-            return f"Avtalen \"{self.tittel}\" holdes i  \"{self.sted}\", starter \"{self.starttidspunkt}\" og varer i \"{self.varighet}\""
+            streng = f"Avtalen \"{self.tittel}\" holdes i  \"{self.sted}\", starter \"{self.starttidspunkt}\" og varer i \"{self.varighet}\" den har kategoriene:"
+            for kategori in self.kategorier:
+                streng += f"{kategori.navn}; "
+        return streng
     
     def __repr__(self):
-        return f"{self.tittel}, {self.sted}, {self.starttidspunkt}, {self.varighet}"
-    
-    
+        streng = f"{self.tittel}, {self.sted}, {self.starttidspunkt}, {self.varighet}, "
+        for kategori in self.kategorier:
+            streng += f"{kategori.navn}; {kategori.ID}; {kategori.Prioritet}; "
+        return streng + "\n"
+        
     def settittel(self, tittel):
         self.tittel = tittel.strip()
     
@@ -50,11 +60,11 @@ class avtale:
             except:
                 raise TypeError("Avtalen forventer \"int\" som varighet")
             break
+        
     def setkategorier(self, kategorier):
         self.kategorier = kategorier
      
-    def leggTilKategori(self, kategori: "Kategori"):
-        #NB! Kan gi duplikater 
+    def leggTilKategori(self, kategori):
         self.kategorier.append(kategori)
 
 def nyavtale():
@@ -93,8 +103,8 @@ def printdict(Dict: dict, Overskrift = "Overskrift :)"):
 
 def eksporterliste(filnavn):
         with open(filnavn, "w", 1, "UTF-8") as ALE:
-            for index in range(len(InternListeMedAvtaler)):
-                ALE.writelines(InternListeMedAvtaler[index].__repr__()+ "\n")
+            for index in InternListeMedAvtaler:
+                ALE.writelines(InternListeMedAvtaler[index].__repr__())
       
 def importerAvtalerListe(filnavn):
     while True:
@@ -147,7 +157,7 @@ def LiknendeTittel(ListeMedAvtaler, søkeord):
     return ListeMedAvtalerMedLiknendeTittel
 
 class Kategori:
-    def __init__(self, ID, navn, Prioritet = 1):
+    def __init__(self, navn, ID, Prioritet = 1):
         self.ID = ID
         self.navn = navn
         self.Prioritet = Prioritet
@@ -160,7 +170,7 @@ class Kategori:
         pass
     
     def __str__(self):
-        return f"Avtalen {self.navn} har ID: {self.ID} og prioritet: {self.Prioritet}" 
+        return f"Kategorien {self.navn} har ID: {self.ID} og prioritet: {self.Prioritet}" 
         
 def nykategori():
     navn = input("Hva skal kategorien hette?: ")
@@ -182,31 +192,31 @@ def importerKategorierListe(filnavn):
                 x = x.strip()
                 y = y.strip()
                 u = u.strip()
-                InternListeMedKategorier.append(x + ", " + y + ", " + u)
-                break
+                InternListeMedKategorier[x] = Kategori(x, y, u)
+            break
 
-x = "E"
-y = "Ikke satt"
-u = "Ikke satt"
-o = "-1"
-hei = avtale(x, y, u, o)
-
-InternListeMedKategorier["avtalen"] = Kategori("en", "avtalen")
 
 while True:
-    print("\nMeny, Velg Tall fra:    1-6")
-    print("Les inn avtaler fra fil: 1 \nSkriv avtalene til fil:  2 \nRegistrer ny avtale:     3 \nPrint alle avtalene:     4 \nTilføy kategori til avtale: 5 \nAvslutt:                 6")
+    print("\nMeny, Velg Tall fra:     1-6")
+    print("Les inn avtaler fra fil:    1")
+    print("Skriv avtalene til fil:     2")
+    print("Registrer ny avtale:        3")
+    print("Print alle avtalene:        4")
+    print("Tilføy kategori til avtale: 5")
+    print("Les inn kategorier fra fil: 6")
+    print("Avslutt:                    7")
+    
     
     while True:
-        valg = input("Ditt valg:               ")
+        valg = input("Ditt valg:                  ")   
         try:
             valg = int(valg)
-            if 0 < valg <= 6:
+            if 0 < valg <= 7:
                break
             else:
                 continue
         except:
-            print("Venligst bruk bare tall mellom 1 og 5")
+            print("Venligst bruk bare tall mellom 1 og 7")
             continue
  
     if valg == 1: #Les inn avtaler fra fil
@@ -226,11 +236,18 @@ while True:
     
     if valg == 5: #Legg til kategori
         printdict(InternListeMedAvtaler, "\nListe over avtaler")
-        printdict(InternListeMedKategorier,"\nListe over Kategorier")
         navnpaavtale = input("\nSkriv inn navnet på avtalen du vil legge kategori til: ")
+        printdict(InternListeMedKategorier,"\nListe over Kategorier")
         navnpakategori = input("Skriv inn navnet til kategorien du vil legge til: ")
-        InternListeMedAvtaler[navnpaavtale].leggTilKategori(InternListeMedKategorier[navnpakategori])
         
+        InternListeMedAvtaler[navnpaavtale].leggTilKategori(InternListeMedKategorier[navnpakategori])
+        print (InternListeMedAvtaler[navnpaavtale].tittel)
+        print (InternListeMedKategorier[navnpakategori].navn)
+        print(navnpaavtale)
     
-    if valg == 6: #avslutt
+    if valg == 6: #Les inn avtaler fra fil
+        navnpafil = input("Skriv inn navnet på filen du vil importere: ")
+        importerKategorierListe(navnpafil+".txt")    
+    
+    if valg == 7: #avslutt
         break 
